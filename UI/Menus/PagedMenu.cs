@@ -78,11 +78,11 @@ namespace Farming.UI
                     .Build();
 
             int value = Utils.Read(predicate);
-            items[value - 1]!.Action(this);
+            items[value - 1]!.Action(Manager);
         }
     }
 
-    public record PagedItem(string Name, Action<PagedMenu> Action)
+    public record PagedItem(string Name, Action<MenuManager> Action)
     {
         public PagedItem(string name, Action action)
             : this(name, _ => action()) { }

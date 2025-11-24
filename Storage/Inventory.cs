@@ -1,16 +1,15 @@
 using System.Collections;
+using Farming.Concurrency;
 using TipeUtils;
 
 namespace Farming.Storage
 {
-    public class Inventory : IEnumerable<KeyValuePair<ItemId, ItemStack>>
+    public class Inventory : IEnumerable<KeyValuePair<ItemId, ItemStack>>, ILockable<Inventory>
     {
         private Dictionary<ItemId, ItemStack> Items { get; set; }
 
-        internal object SyncRoot { get; } = new();
-
-        private static long _idCounter;
-        public long InventoryId { get; } = Interlocked.Increment(ref _idCounter);
+        public LockId<Inventory> LockId { get; } = new();
+        public object SyncRoot { get; } = new();
 
         internal Inventory(Dictionary<ItemId, ItemStack> items)
         {

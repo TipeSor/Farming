@@ -1,32 +1,23 @@
+using Farming.Concurrency;
 using TipeUtils;
 
 namespace Farming.Storage
 {
-    public record ExchangeOffer(ItemStack[] Offers)
-    {
-        public static readonly ExchangeOffer Empty = new([]);
-
-        public static implicit operator ExchangeOffer(ItemStack[] offers)
-        {
-            return new ExchangeOffer(offers);
-        }
-    }
-
     public static class ExchangeSystem
     {
         public static Result Exchange(
             Inventory target,
             Inventory source,
-            ExchangeOffer toTarget,
-            ExchangeOffer toSource
+            ItemStack[] toTarget,
+            ItemStack[] toSource
         )
         {
-            return LockAll([target, source], () =>
+            return Locking.LockAll([target, source], () =>
             {
                 Inventory _target = target.Clone();
                 Inventory _source = source.Clone();
 
-                foreach (ItemStack stack in toTarget.Offers)
+                foreach (ItemStack stack in toTarget)
                 {
                     ItemStack buffer = new(stack.ItemData);
 
@@ -41,7 +32,7 @@ namespace Farming.Storage
                             $"Failed to add {stack.Amount}x {stack.Name} to target inventory: {target_result.Message}");
                 }
 
-                foreach (ItemStack stack in toSource.Offers)
+                foreach (ItemStack stack in toSource)
                 {
                     ItemStack buffer = new(stack.ItemData);
 
@@ -60,29 +51,6 @@ namespace Farming.Storage
                 source.ReplaceWith(_source);
                 return Result.Ok();
             });
-        }
-
-
-        public static TResult LockAll<TResult>(
-            IEnumerable<Inventory> inventories,
-            Func<TResult> action)
-        {
-            object[] ordered = [.. inventories
-                .Select(static inv => new { Lock = inv.SyncRoot, Id = inv.InventoryId })
-                .OrderBy(static x => x.Id)
-                .Select(static x => x.Lock)];
-
-            return LockRecursive(ordered, 0, action);
-        }
-
-        private static TResult LockRecursive<TResult>(
-            object[] locks, int index, Func<TResult> action)
-        {
-            if (index == locks.Length)
-                return action();
-
-            lock (locks[index])
-                return LockRecursive(locks, index + 1, action);
         }
     }
 }

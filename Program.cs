@@ -1,7 +1,7 @@
 ﻿using TipeUtils.IO;
 using Farming.UI;
 using Farming.Core;
-using Farming.Crafting;
+using Farming.GameContent;
 namespace Farming
 {
     public static class Program
@@ -23,7 +23,7 @@ namespace Farming
         private static void InitializeWorld()
         {
             objects.Add(player);
-            objects.Add(Crafters.CreateFurnace());
+            objects.Add(Crafter.Creator.CreateFurnace());
         }
 
         private static void Run()
@@ -31,7 +31,7 @@ namespace Farming
             PagedMenuBuilder builder = new();
 
             foreach (GameObject obj in objects)
-                builder.AddItem(obj.Name, m => m.Manager.Next(obj.BuildMenu()));
+                builder.AddItem(obj.Name, m => m.Next(obj.BuildMenu()));
 
             PagedMenu menu = builder.Build();
             MenuManager menuManager = new(menu);

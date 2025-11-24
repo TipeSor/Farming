@@ -1,7 +1,6 @@
 using static Farming.Program;
 namespace Farming.UI
 {
-
     public class DisplayMenu : BaseMenu
     {
         private readonly string value;

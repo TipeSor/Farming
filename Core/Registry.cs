@@ -1,7 +1,7 @@
 using System.Collections;
 using TipeUtils;
 
-namespace Farming
+namespace Farming.Core
 {
     public class Registry<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>
         where TKey : notnull

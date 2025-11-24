@@ -11,7 +11,7 @@ namespace Farming.UI
             return this;
         }
 
-        public PagedMenuBuilder AddItem(string name, Action<BaseMenu> action)
+        public PagedMenuBuilder AddItem(string name, Action<MenuManager> action)
             => AddItem(new PagedItem(name, action));
 
         public PagedMenuBuilder SetItemsPerPage(int count)
