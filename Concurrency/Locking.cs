@@ -20,10 +20,10 @@ namespace Farming.Concurrency
                 .OrderBy(static x => x.Id)
                 .Select(static x => x.Lock)];
 
-            return LockRecursive(ordered, func);
+            return RunLocked(ordered, func);
         }
 
-        private static TResult LockRecursive<TResult>(
+        private static TResult RunLocked<TResult>(
             object[] locks, Func<TResult> action)
         {
             int acquired = 0;

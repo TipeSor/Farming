@@ -1,5 +1,6 @@
 using System.Collections;
 using Farming.Concurrency;
+using Farming.Storage;
 using TipeUtils;
 
 namespace Farming.Storage
@@ -9,7 +10,7 @@ namespace Farming.Storage
         private Dictionary<ItemId, ItemStack> Items { get; set; }
 
         public LockId<Inventory> LockId { get; } = new();
-        public object SyncRoot { get; } = new();
+        public object SyncRoot { get; } = new object();
 
         internal Inventory(Dictionary<ItemId, ItemStack> items)
         {
@@ -77,6 +78,52 @@ namespace Farming.Storage
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+    }
+}
+
+namespace Other
+{
+
+    public class Temp
+    {
+        private Dictionary<ItemId, ItemStack> Items { get; set; } = [];
+
+        public LockId<Inventory> LockId { get; } = new();
+        public object SyncRoot { get; } = new object();
+
+        public Result AddItem(ref ItemStack source)
+        {
+            lock (SyncRoot)
+            {
+                if (!Items.TryGetValue(source.Id, out ItemStack target))
+                {
+                    target = new ItemStack(source.ItemData, 0);
+                }
+
+                Result result = ItemUtils.Merge(ref target, ref source);
+                if (result.IsError)
+                    return Result.Error($"Failed to merge item {source.Name}: {result.Message}");
+
+                Items[source.Id] = target;
+                return Result.Ok();
+            }
+        }
+
+        public Result AddItem(ItemStack source)
+        {
+            lock (SyncRoot)
+            {
+                if (!Items.TryGetValue(source.Id, out ItemStack target))
+                {
+                    target = new ItemStack(source.ItemData, source.Amount);
+                    Items[source.Id] = target;
+                    return Result.Ok();
+                }
+
+                target.Add(source.Amount);
+                return Result.Ok();
+            }
         }
     }
 }

@@ -3,7 +3,8 @@ namespace Farming.UI
     public class PagedMenuBuilder
     {
         private readonly List<PagedItem> _items = [];
-        private int? elementsPerPage;
+        private const int controlItems = 3;
+        private int elementsPerPage = controlItems;
 
         public PagedMenuBuilder AddItem(PagedItem item)
         {
@@ -16,21 +17,18 @@ namespace Farming.UI
 
         public PagedMenuBuilder SetItemsPerPage(int count)
         {
-            return SetElementsPerPage(count + 2);
+            return SetElementsPerPage(count + controlItems);
         }
 
         public PagedMenuBuilder SetElementsPerPage(int count)
         {
-            elementsPerPage = Math.Max(count, 2);
+            elementsPerPage = Math.Max(count, controlItems);
             return this;
         }
 
         public PagedMenu Build()
         {
-            if (elementsPerPage == null)
-                return new PagedMenu(_items);
-            else
-                return new PagedMenu((int)elementsPerPage, _items);
+            return new PagedMenu(_items, elementsPerPage);
         }
     }
 }

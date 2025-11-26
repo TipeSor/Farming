@@ -5,27 +5,31 @@ namespace Farming.UI
     public class PagedMenu : BaseMenu
     {
         private readonly IReadOnlyList<PagedItem> _items;
-        private int ElementsPerPage { get; init; }
-        private int ItemsPerPage => ElementsPerPage - 3;
+
+        private readonly int ElementsPerPage;
+        private readonly int ItemsPerPage;
+
+        private readonly int PageCount;
+        private readonly int MaxPageIndex;
+
         private int _currentPage;
-        private int PageCount => Math.Max((_items.Count + ItemsPerPage - 1) / ItemsPerPage, 1);
-        private int MaxPageIndex => PageCount - 1;
+
         private int PageStartIndex => _currentPage * ItemsPerPage;
+        private IEnumerable<PagedItem> CurrentPageItems => _items.Skip(PageStartIndex).Take(ItemsPerPage);
 
-        public PagedMenu(int elementsPerPage, ICollection<PagedItem> items)
+        public static event EventHandler? OnQuit;
+        public IEnumerable<PagedItem> Items => _items;
+
+        public PagedMenu(ICollection<PagedItem> items, int elementsPerPage)
         {
-            ElementsPerPage = Math.Max(elementsPerPage, 2);
             _items = [.. items];
+
+            ElementsPerPage = Math.Max(elementsPerPage, 3);
+            ItemsPerPage = ElementsPerPage - 3;
+
+            PageCount = Math.Max((items.Count + ItemsPerPage - 1) / ItemsPerPage, 1);
+            MaxPageIndex = PageCount - 1;
         }
-
-        public PagedMenu(ICollection<PagedItem> items)
-            : this(9, items) { }
-
-        public PagedMenu(params PagedItem[] items)
-            : this((ICollection<PagedItem>)items) { }
-
-        public PagedMenu(int itemsPerPage, params PagedItem[] items)
-            : this(itemsPerPage, (ICollection<PagedItem>)items) { }
 
         private void NextPage()
         {
@@ -39,7 +43,6 @@ namespace Farming.UI
             _currentPage = (_currentPage + PageCount - 1) % PageCount;
         }
 
-        private IEnumerable<PagedItem> CurrentPageItems => _items.Skip(PageStartIndex).Take(ItemsPerPage);
 
         public override void Tick()
         {
@@ -53,7 +56,7 @@ namespace Farming.UI
                 }
 
                 items[^1] = Manager.IsMain
-                    ? new PagedItem("Quit", Program.Stop)
+                    ? new PagedItem("Quit", Manager.RaiseQuit)
                     : new PagedItem("Back", Manager.Back);
 
                 PagedItem[] elements = [.. CurrentPageItems];

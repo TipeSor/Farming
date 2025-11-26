@@ -2,21 +2,24 @@ using TipeUtils;
 
 namespace Farming.Storage
 {
-    public class ItemUtils
+    public class ItemSystem
     {
         public static Result Move(ref ItemStack target, ref ItemStack source, uint amount)
         {
             if (target.Id != source.Id)
-                return Result.Error("");
+                return Result.Error("Id missmatch");
 
-            Result<ItemStack> target_result = target.Add(amount);
-            Result<ItemStack> source_result = source.Remove(amount);
+            if (amount == 0)
+                return Result.Ok();
+
+            Result<ItemStack> target_result = Add(target, amount);
+            Result<ItemStack> source_result = Remove(source, amount);
 
             if (target_result.IsError)
-                return Result.Error($"target: {target_result.Message}");
+                return Result.Error($"Target: {target_result.Message}");
 
             if (source_result.IsError)
-                return Result.Error($"source: {source_result.Message}");
+                return Result.Error($"Source: {source_result.Message}");
 
             target = target_result.Value;
             source = source_result.Value;
@@ -29,14 +32,30 @@ namespace Farming.Storage
             return Move(ref target, ref source, source.Amount);
         }
 
-        public static Result<ItemStack> Split(ref ItemStack item, uint amount)
+        public static Result<ItemStack> Split(ref ItemStack source, uint amount)
         {
-            Result<ItemStack> result = item.Remove(amount);
+            ItemStack target = new(source.ItemData);
+            Result result = Move(ref source, ref target, amount);
             if (result.IsError)
-                return result;
+                return Result<ItemStack>.Error($"Failed to split stack: {result.Message}");
 
-            item = result.Value;
-            return Result<ItemStack>.Ok(new ItemStack(item.ItemData, amount));
+            return Result<ItemStack>.Ok(target);
+        }
+
+        internal static Result<ItemStack> Add(ItemStack target, uint amount)
+        {
+            if (uint.MaxValue - target.Amount < amount)
+                return Result<ItemStack>.Error("Not enough space.");
+
+            return Result<ItemStack>.Ok(new ItemStack(target.ItemData, target.Amount + amount));
+        }
+
+        internal static Result<ItemStack> Remove(ItemStack target, uint amount)
+        {
+            if (target.Amount < amount)
+                return Result<ItemStack>.Error("Not enough items.");
+
+            return Result<ItemStack>.Ok(new ItemStack(target.ItemData, target.Amount - amount));
         }
     }
 }

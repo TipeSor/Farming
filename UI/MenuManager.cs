@@ -5,11 +5,19 @@ namespace Farming.UI
         private readonly BaseMenu _mainMenu;
         private readonly Stack<BaseMenu> _menus = [];
 
+        private BaseMenu Current => _menus.Count == 0 ? _mainMenu : _menus.Peek();
+        public bool IsMain => _menus.Count == 0;
+
+        public static event EventHandler? QuitSignal;
+
         public MenuManager(BaseMenu main)
         {
             _mainMenu = main;
             _mainMenu.Manager = this;
         }
+
+        public void RaiseQuit() =>
+            QuitSignal?.Invoke(this, EventArgs.Empty);
 
         public void Next(BaseMenu menu)
         {
@@ -34,9 +42,6 @@ namespace Farming.UI
         {
             _menus.Clear();
         }
-
-        private BaseMenu Current => _menus.Count == 0 ? _mainMenu : _menus.Peek();
-        public bool IsMain => _menus.Count == 0;
 
         public void Tick()
         {
