@@ -17,7 +17,6 @@ namespace Farming.UI
         private int PageStartIndex => _currentPage * ItemsPerPage;
         private IEnumerable<PagedItem> CurrentPageItems => _items.Skip(PageStartIndex).Take(ItemsPerPage);
 
-        public static event EventHandler? OnQuit;
         public IEnumerable<PagedItem> Items => _items;
 
         public PagedMenu(ICollection<PagedItem> items, int elementsPerPage)
@@ -27,7 +26,7 @@ namespace Farming.UI
             ElementsPerPage = Math.Max(elementsPerPage, 3);
             ItemsPerPage = ElementsPerPage - 3;
 
-            PageCount = Math.Max((items.Count + ItemsPerPage - 1) / ItemsPerPage, 1);
+            PageCount = ItemsPerPage == 0 ? 1 : (items.Count + ItemsPerPage - 1) / ItemsPerPage;
             MaxPageIndex = PageCount - 1;
         }
 

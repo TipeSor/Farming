@@ -4,7 +4,7 @@ namespace Farming.UI
     {
         private readonly List<PagedItem> _items = [];
         private const int controlItems = 3;
-        private int elementsPerPage = controlItems;
+        private int elementsPerPage = 9;
 
         public PagedMenuBuilder AddItem(PagedItem item)
         {

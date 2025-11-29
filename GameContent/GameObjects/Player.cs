@@ -7,13 +7,12 @@ namespace Farming.GameContent
     public class Player : GameObject
     {
         public override string Name { get; } = "Player";
-        public Inventory Inventory { get; } = new();
+        public BasicInventory Inventory { get; } = new();
 
         public override BaseMenu BuildMenu()
         {
             PagedMenuBuilder builder = new();
 
-            builder.InventoryActions(Inventory);
             builder.AddItem("Add Item", action: BuildGiveMenu);
 
             return builder.Build();
@@ -25,7 +24,7 @@ namespace Farming.GameContent
 
             foreach ((ItemId id, ItemData data) in Item.Registry)
             {
-                builder.AddItem(data.Name, m => AddItem(m, data));
+                builder.AddItem(data.Id, m => AddItem(m, data));
             }
 
             manager.Next(builder.Build());
@@ -38,7 +37,7 @@ namespace Farming.GameContent
 
             manager.Next(
                 new DisplayMenuBuilder()
-                    .Append($"Added 100x {data.Name}")
+                    .Append($"Added 100x {data.Id}")
                     .SetAction(static m => m.Manager.Main())
                     .Build());
         }

@@ -5,7 +5,7 @@ namespace Farming.UI
         private readonly BaseMenu _mainMenu;
         private readonly Stack<BaseMenu> _menus = [];
 
-        private BaseMenu Current => _menus.Count == 0 ? _mainMenu : _menus.Peek();
+        private BaseMenu Current => IsMain ? _mainMenu : _menus.Peek();
         public bool IsMain => _menus.Count == 0;
 
         public static event EventHandler? QuitSignal;

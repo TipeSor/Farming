@@ -1,4 +1,4 @@
 namespace Farming.Crafting
 {
-    public record RecipeBook(RecipeData[] Recipes);
+    public record RecipeBook(params RecipeData[] Recipes);
 }

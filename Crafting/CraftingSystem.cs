@@ -7,25 +7,25 @@ namespace Farming.Crafting
     public class CraftingSystem
     {
         public static Result Craft(
-            Inventory target,
+            IInventory target,
             RecipeData recipe,
             uint multiplier)
         {
             return Locking.LockAll([target], () =>
             {
-                Inventory _target = target.Clone();
+                IInventory _target = target.Clone();
 
-                foreach (ItemStack stack in recipe.Input)
+                foreach ((ItemData data, uint amount) in recipe.Input)
                 {
-                    ItemStack buffer = new(stack.ItemData, 0);
-                    Result result = _target.GetItem(ref buffer, stack.Amount * multiplier);
+                    ItemStack buffer = new(data, 0);
+                    Result result = _target.GetItem(ref buffer, amount * multiplier);
                     if (result.IsError)
                         return Result.Error($"Crafting failed: {result.Message}");
                 }
 
-                foreach (ItemStack stack in recipe.Output)
+                foreach ((ItemData data, uint amount) in recipe.Output)
                 {
-                    ItemStack buffer = new(stack.ItemData, stack.Amount * multiplier);
+                    ItemStack buffer = new(data, amount * multiplier);
                     Result result = _target.AddItem(ref buffer);
                     if (result.IsError)
                         return Result.Error($"Crafting failed: {result.Message}");

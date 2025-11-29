@@ -9,14 +9,13 @@ namespace Farming.Core
     {
         private readonly Dictionary<TKey, TValue> _reg = [];
 
-        public Result<TValue> Register(TKey key, Func<TValue> factory)
+        public Result<TValue> Register(TKey key, TValue value)
         {
             if (_reg.ContainsKey(key))
                 return Result<TValue>.Error($"Conflicting definition for key '{key}'.");
 
             try
             {
-                TValue value = factory();
                 _reg[key] = value;
                 return Result<TValue>.Ok(value);
             }

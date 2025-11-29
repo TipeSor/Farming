@@ -5,13 +5,13 @@ namespace Farming.Core
 {
     public static class Extensions
     {
-        public static void Show(this Inventory inventory, MenuManager manager)
+        public static void Show(this IInventory inventory, MenuManager manager)
         {
             DisplayMenuBuilder builder = new();
             foreach ((ItemId id, ItemStack item) in inventory)
             {
                 builder
-                    .Append($"{item.Amount}x {item.Name}")
+                    .Append($"{item.Amount}x {item.Id}")
                     .NewLine();
             }
             manager.Next(
@@ -22,7 +22,7 @@ namespace Farming.Core
 
         public static PagedMenuBuilder InventoryActions(
             this PagedMenuBuilder builder,
-            Inventory inventory
+            IInventory inventory
         )
         {
             return builder

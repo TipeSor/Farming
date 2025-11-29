@@ -21,6 +21,7 @@ namespace Farming.GameContent
 
         private void SelectRecipe(MenuManager manager)
         {
+
             PagedMenuBuilder builder = new();
 
             foreach (RecipeData recipe in recipeBook.Recipes)
@@ -56,11 +57,11 @@ namespace Farming.GameContent
             else
             {
                 builder.Append($"Successfuly crafted: ");
-                foreach (ItemStack item in recipe.Output)
+                foreach ((ItemData data, uint amount) in recipe.Output)
                 {
                     builder
                         .NewLine()
-                        .Append($"{item.Amount}x {item.Name} ");
+                        .Append($"{amount * multi}x {data.Id} ");
                 }
             }
 
@@ -75,16 +76,16 @@ namespace Farming.GameContent
         {
             StringBuilder sb = new();
 
-            foreach (ItemStack stack in recipe.Input)
+            foreach ((ItemData data, uint amount) in recipe.Input)
             {
-                sb.Append($"{stack.Amount}x {stack.Name} ");
+                sb.Append($"{amount}x {data.Id} ");
             }
 
             sb.Append("=> ");
 
-            foreach (ItemStack stack in recipe.Output)
+            foreach ((ItemData data, uint amount) in recipe.Output)
             {
-                sb.Append($"{stack.Amount}x {stack.Name}");
+                sb.Append($"{amount}x {data.Id}");
             }
 
             return sb.ToString();
