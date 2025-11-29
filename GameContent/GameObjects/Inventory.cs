@@ -1,9 +1,9 @@
 using System.Collections;
 using Farming.Concurrency;
-using Farming.Storage;
+using Farming.GameContent;
 using TipeUtils;
 
-namespace Farming
+namespace Farming.Storage
 {
     public class BasicInventory : IInventory
     {
@@ -35,7 +35,7 @@ namespace Farming
 
                 Result result = ItemSystem.Merge(ref target, ref source);
                 if (result.IsError)
-                    return Result.Error($"Failed to merge item {source.Id}: {result.Message}");
+                    return Result.Error($"Failed to merge item {source.GetName()}: {result.Message}");
 
                 Items[source.Id] = target;
             }
@@ -48,8 +48,7 @@ namespace Farming
             lock (SyncRoot)
             {
                 if (!Items.TryGetValue(target.Id, out ItemStack source))
-                    return Result.Error($"Item {target.Id} not found.");
-
+                    return Result.Error($"Item {target.GetName()} not found.");
 
                 Result result = ItemSystem.Move(ref target, ref source, amount);
                 if (result.IsError)

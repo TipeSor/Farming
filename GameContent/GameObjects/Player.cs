@@ -1,7 +1,7 @@
 using Farming.Core;
 using Farming.Storage;
 using Farming.UI;
-
+using static Farming.Program;
 namespace Farming.GameContent
 {
     public class Player : GameObject
@@ -13,6 +13,7 @@ namespace Farming.GameContent
         {
             PagedMenuBuilder builder = new();
 
+            builder.InventoryActions(Inventory);
             builder.AddItem("Add Item", action: BuildGiveMenu);
 
             return builder.Build();
@@ -22,9 +23,9 @@ namespace Farming.GameContent
         {
             PagedMenuBuilder builder = new();
 
-            foreach ((ItemId id, ItemData data) in Item.Registry)
+            foreach ((ItemId id, ItemData data) in Program.Content.ItemRegistry)
             {
-                builder.AddItem(data.Id, m => AddItem(m, data));
+                builder.AddItem(data.GetName(), m => AddItem(m, data));
             }
 
             manager.Next(builder.Build());
@@ -37,7 +38,7 @@ namespace Farming.GameContent
 
             manager.Next(
                 new DisplayMenuBuilder()
-                    .Append($"Added 100x {data.Id}")
+                    .Append($"Added 100x {data.GetName()}")
                     .SetAction(static m => m.Manager.Main())
                     .Build());
         }

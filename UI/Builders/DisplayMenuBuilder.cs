@@ -13,6 +13,12 @@ namespace Farming.UI
             return this;
         }
 
+        public DisplayMenuBuilder AppendLine(object value)
+        {
+            _sb.Append(value).AppendLine();
+            return this;
+        }
+
         public DisplayMenuBuilder NewLine()
         {
             _sb.AppendLine();
